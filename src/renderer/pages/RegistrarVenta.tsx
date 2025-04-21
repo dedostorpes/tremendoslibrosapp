@@ -5,9 +5,10 @@ import { findFirstAvailableRow, markAsSold } from '../../services/googleSheets';
 interface Props {
   spreadsheetId: string;
   sheetName: string;
+  keyFilePath: string;
 }
 
-export default function RegistrarVenta({ spreadsheetId, sheetName }: Props) {
+export default function RegistrarVenta({ spreadsheetId, sheetName, keyFilePath }: Props) {
   const [titulo, setTitulo] = useState('');
   const [precio, setPrecio] = useState('');
   const [mensaje, setMensaje] = useState('');
@@ -19,13 +20,13 @@ export default function RegistrarVenta({ spreadsheetId, sheetName }: Props) {
     }
 
     try {
-      const ejemplar = await findFirstAvailableRow(spreadsheetId, sheetName, titulo);
+      const ejemplar = await findFirstAvailableRow(spreadsheetId, sheetName, titulo, keyFilePath);
       if (!ejemplar) {
         setMensaje('No hay ejemplares disponibles para este título');
         return;
       }
 
-      await markAsSold(spreadsheetId, sheetName, ejemplar.rowIndex, parseFloat(precio));
+      await markAsSold(spreadsheetId, sheetName, ejemplar.rowIndex, parseFloat(precio), keyFilePath);
       setMensaje(`Venta registrada. Fila ${ejemplar.rowIndex} marcada como VENDIDO.`);
     } catch (err) {
       console.error(err);
